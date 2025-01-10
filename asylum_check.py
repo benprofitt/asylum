@@ -73,8 +73,13 @@ def check_answer(question: FormQuestion) -> FormQuestion:
         "missing info (i.e. not answering the question), saying too "
         "much info, or providing irrelevant information. More than one "
         "can be true. "
-        "Here are the rules that the answer must follow:\n"
+        "Here are the rules that the answer should follow:\n"
         f"Rules: {rules}\n"
+        "End of rules."
+        "Not every rule must be followed if that would cause contridiction. "
+        "For example, if the answer is short and references back to the cover letter, "
+        "it is not necessary to satisfy all other inclusion-specific rules "
+        "because they are likely satisfied by the cover letter. "
     )
 
     system_message = make_message("system", system_prompt)
