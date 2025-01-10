@@ -1,0 +1,30 @@
+[tool.poetry]
+name = "asylum-backend"
+version = "0.1.0"
+description = ""
+authors = ["Ben Parfitt <benjaminlparfitt@gmail.com>"]
+license = "Private"
+readme = "README.md"
+package-mode = false
+
+[tool.poetry.dependencies]
+python = "^3.11"
+flask = "^3.0.3"
+gunicorn = "^23.0.0"
+openai = "^1.53.0"
+pydantic = "^2.9.2"
+flask-cors = "^5.0.0"
+tiktoken = "^0.8.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.0.0"
+black = "^24.1.1"
+flake8 = "^7.0.0"
+python-dotenv = "^1.0.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 100

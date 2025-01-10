@@ -1,4 +1,6 @@
 **/config.py
+**/*.lock
+example_questions.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

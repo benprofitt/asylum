@@ -12,6 +12,15 @@ class AnswerReason(BaseModel):
     irrelevant_info: bool
     reasoning: str
 
+    def to_dict(self) -> dict:
+        return {
+            "rule_violation": self.rule_violation,
+            "missing_info": self.missing_info,
+            "said_too_much": self.said_too_much,
+            "irrelevant_info": self.irrelevant_info,
+            "reasoning": self.reasoning
+        }
+
 @dataclass
 class FormQuestion:
     question: str
@@ -38,6 +47,8 @@ class InformationRequests(BaseModel):
 
 def check_answer(question: FormQuestion) -> FormQuestion:
 
+    specific_rules = "\n ".join(question.specific_rules)
+
     system_prompt = (
         "Your job is to determine if the following question is "
         "answered sufficiently. Respond with true or false for "
@@ -47,7 +58,7 @@ def check_answer(question: FormQuestion) -> FormQuestion:
         "can be true. "
         "Here are the rules that the answer must follow:\n"
         f"Rules: {make_rules()}\n"
-        f"{"\n ".join(question.specific_rules)}\n"
+        f"{specific_rules}\n"
     )
 
     system_message = make_message("system", system_prompt)
@@ -75,6 +86,7 @@ def check_answer(question: FormQuestion) -> FormQuestion:
 
 def create_info_requests(question: FormQuestion) -> list[InformationRequest]:
 
+    specific_rules = "\n ".join(question.specific_rules)
     system_prompt = (
         "Your job is to determine what additional information is needed " 
         "to make the answer sufficient. Respond with the questions that "
@@ -84,7 +96,7 @@ def create_info_requests(question: FormQuestion) -> list[InformationRequest]:
         "Be explicit about what information is missing or needed. "
         "Here are the rules that the answer must follow:\n"
         f"Rules: {make_rules()}\n"
-        f"{"\n ".join(question.specific_rules)}\n"
+        f"{specific_rules}\n"
     )
     system_message = make_message("system", system_prompt)
 
@@ -123,11 +135,12 @@ def reduce_requests(requests: list[InformationRequest]) -> InformationRequests:
     )
     system_message = make_message("system", system_prompt)
 
+    req_string = '\n '.join([r.question for r in requests])
     user_prompt = (
         "The following information requests have been made. "
         "Please determine if any can be combined to reduce redundancy. "
         "If so, provide the reduced list of information requests. "
-        f"Requests: {"\n ".join([r.question for r in requests])}\n"
+        f"Requests: {req_string}\n"
     )
     user_message = make_message("user", user_prompt)
 
@@ -174,6 +187,19 @@ def verify_answers(questions: list[FormQuestion]) -> list[FormQuestion]:
     for key, value in new_information.items():
         print(f"{key}: {value}")
 
+
+def check_answers_and_give_feedback(questions: list[FormQuestion]) -> list:
+    # Check all answers
+    questions = check_all_answers(questions)
+
+    # Create a dict to store the feedback and show it to the original user
+    feedback = []
+    for question in questions:
+        d = {"question": question.question, "answer": question.answer}
+        d["evaluation"] = question.answer_evaluation.to_dict()
+        feedback.append(d)
+
+    return feedback
 
 def main():
     # read in questions from a file
