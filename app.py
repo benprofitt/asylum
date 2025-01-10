@@ -6,8 +6,7 @@ import time
 import json
 from datetime import timedelta
 
-from asylum_check import check_answers_and_give_feedback, FormQuestion
-
+from asylum_check import check_answers_and_give_feedback, check_full_cover_letter, FormQuestion, CoverLetter
 IS_PRODUCTION = os.getenv("ENV") == "production"
 FRONTEND_URL = os.getenv("FRONTEND_URL")
 API_URL = os.getenv("API_URL")
@@ -22,9 +21,27 @@ CORS(app, resources={r"/*": {"origins": "*"}})  # Allow all origins
 def main():
     return jsonify({"message": "Hello, World!"})
 
+@app.route("/coverletter", methods=["POST"])
+def coverletter():
+    data = request.get_json()
 
-@app.route("/grade", methods=["POST"])
-def grade():
+    print(data)
+
+    if "body" in data:
+
+        # Create a CoverLetter object from the json
+        letter = CoverLetter(data["body"])
+
+        # Verify the cover letter
+        feedback = check_full_cover_letter(letter)
+
+        # Return the listing in JSON
+        return jsonify(feedback)
+    else:
+        return jsonify({"error": "Invalid input. Expected a list of file paths."}), 400
+
+@app.route("/gradequestions", methods=["POST"])
+def gradequestions():
     data = request.get_json()
 
     print(data)
