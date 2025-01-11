@@ -30,7 +30,7 @@ def coverletter():
     if "body" in data:
 
         # Create a CoverLetter object from the json
-        letter = CoverLetter(data["body"])
+        letter = CoverLetter(data["body"], [], None, False)
 
         # Verify the cover letter
         feedback = check_full_cover_letter(letter)

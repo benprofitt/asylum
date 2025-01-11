@@ -59,7 +59,7 @@ class InformationRequests(BaseModel):
     requests: list[InformationRequest]
 
 
-def check_answer(question: FormQuestion) -> FormQuestion:
+def check_answer(question: FormQuestion) -> bool:
 
     if question.specific_rules is not None and len(question.specific_rules) > 0:
         rules = "\n ".join(question.specific_rules)
@@ -143,7 +143,7 @@ def create_info_requests(question: FormQuestion) -> list[InformationRequest]:
 def check_all_answers(questions: list[FormQuestion]) -> list[FormQuestion]:
     for question in questions:
         if not question.finalized:
-            question = check_answer(question)
+            check_answer(question)
     return questions
 
 
@@ -236,7 +236,7 @@ def check_full_cover_letter(letter: CoverLetter) -> dict:
     )
 
     # check the answer
-    q = check_answer(q)
+    check_answer(q)
 
     feedback = {}
     feedback["question"] = q.question
